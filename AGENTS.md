@@ -67,7 +67,9 @@ sygin/
 ├── test_smoke.py                        # End-to-end smoke test (143 lines)
 ├── requirements.txt                     # Python dependencies
 ├── .env                                 # Environment variables (GEMINI_API_KEY)
-├── FEC_blckbx_cannes_2025.xlsx         # Sample FEC file (9,375 entries)
+├── data/                                # Sample / reference data files
+│   ├── FEC_blckbx_cannes_2025.xlsx      # Sample FEC file (9,375 entries)
+│   └── PCG simplifié.csv                # Reference PCG (simplified chart)
 ├── pcg_agent/                           # Main package (23 Python files)
 │   ├── api/                             # FastAPI routes
 │   │   ├── routes.py                    # /upload-fec, /chat endpoints

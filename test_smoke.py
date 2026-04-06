@@ -14,6 +14,7 @@ import sys
 from pathlib import Path
 
 BASE = Path(__file__).parent
+DATA_DIR = BASE / "data"
 sys.path.insert(0, str(BASE))
 
 from pcg_agent.ingestion.fec_loader import FECIngestion
@@ -23,7 +24,7 @@ from pcg_agent.tools.dispatcher import dispatch
 
 
 def main():
-    fec_path = BASE / "FEC_blckbx_cannes_2025.xlsx"
+    fec_path = DATA_DIR / "FEC_blckbx_cannes_2025.xlsx"
     config_dir = BASE / "pcg_agent" / "config"
 
     print("=" * 60)

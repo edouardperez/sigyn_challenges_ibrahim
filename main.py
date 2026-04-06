@@ -30,7 +30,8 @@ from pcg_agent.api.routes import router, _sessions
 
 BASE_DIR = Path(__file__).parent
 CONFIG_DIR = BASE_DIR / "pcg_agent" / "config"
-FEC_FILE = BASE_DIR / "FEC_blckbx_cannes_2025.xlsx"
+DATA_DIR = BASE_DIR / "data"
+FEC_FILE = DATA_DIR / "FEC_blckbx_cannes_2025.xlsx"
 
 app = FastAPI(
     title="PCG FEC Agent",
