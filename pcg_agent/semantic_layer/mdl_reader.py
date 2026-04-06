@@ -1,6 +1,6 @@
 """L2/L3 — PCG Semantic Layer: the bridge between rubrique_keys and SQL.
 
-Architecture: dual-path reader over a unified MDL manifest.
+Architecture: dual-path reader over a unified MDL (Modeling Definition Language) manifest.
 
 Each rubrique in mdl_manifest.json carries two sub-blocks:
 

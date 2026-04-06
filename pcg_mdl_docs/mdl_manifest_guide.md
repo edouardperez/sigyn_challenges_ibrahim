@@ -30,10 +30,12 @@
 
 ## 1. What Is the MDL Manifest?
 
-The MDL (Measurement Definition Language) Manifest is the **single source of truth** for every financial rubrique (concept) in the PCG Agent. It defines:
+The MDL (Modeling Definition Language) Manifest is the **single source of truth** for every financial rubrique (concept) in the PCG Agent. It defines:
 
 - **What** each rubrique means (for the LLM)
 - **How** each rubrique compiles to SQL (for the query engine)
+
+> **Terminology:** **MDL** is *Modeling* Definition Language (same naming as Wren AI’s semantic layer), not “Measurement” Definition Language.
 
 These two concerns are kept in separate sub-blocks (`semantic{}` and `execution{}`), read through two independent code paths — the LLM never sees SQL details, and the SQL builder never sees semantic labels.
 
