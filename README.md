@@ -2,6 +2,8 @@
 
 Config-driven financial analysis for French **FEC** files: **FastAPI** + LangGraph / Gemini backend, **Next.js** chat UI.
 
+**Benchmark sheet:** [Google Sheet — manual metric checks](https://docs.google.com/spreadsheets/d/1a6Fu6i8RV6OQ2ga7P81xyitQAwysUO_3njSHx20LxAY/edit?usp=sharing) lists metrics computed by hand from the same source data, so you can compare them to the FEC agent’s outputs.
+
 ## Run
 
 ```bash
