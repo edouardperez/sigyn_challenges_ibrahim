@@ -418,6 +418,391 @@
         },
 
         {
+          "rubrique_key": "consommations",
+          "semantic": {
+            "display_name": "Consommations",
+            "synonyms": ["achats", "services extérieurs", "charges externes", "consommation intermédiaire"],
+            "description": "Achats (60) + services extérieurs (61-62). Consommations en provenance des tiers.",
+            "logic": {
+              "inclusion": "Comptes 60 (achats), 61 (services extérieurs), 62 (autres services extérieurs).",
+              "exclusion": "Charges de personnel (64), impôts (63)."
+            },
+            "higher_is_better": false,
+            "importance_level": 8,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "exploitation", "sig", "pcg_classe6"]
+          },
+          "execution": {
+            "macro": "solde_actif",
+            "include_prefixes": ["60", "61", "62"],
+            "prefix_match_length": 2
+          }
+        },
+
+        {
+          "rubrique_key": "valeur_ajoutee",
+          "semantic": {
+            "display_name": "Valeur Ajoutée",
+            "synonyms": ["VA", "richesse créée", "value added"],
+            "description": "Richesse créée par l'entreprise : production de l'exercice (70-72) moins consommations intermédiaires (60-62).",
+            "logic": {
+              "inclusion": "Produits 70-72 moins charges 60-62.",
+              "exclusion": "Subventions (74), impôts (63), personnel (64)."
+            },
+            "higher_is_better": true,
+            "importance_level": 9,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "exploitation", "sig", "pcg_classe6_7"]
+          },
+          "execution": {
+            "macro": "composite",
+            "composite_parts": [
+              {
+                "include_prefixes": ["70", "71", "72"],
+                "prefix_match_length": 2,
+                "polarity": "credit_moins_debit"
+              },
+              {
+                "include_prefixes": ["60", "61", "62"],
+                "prefix_match_length": 2,
+                "polarity": "debit_moins_credit",
+                "sign": "negative"
+              }
+            ]
+          }
+        },
+
+        {
+          "rubrique_key": "subventions_exploitation",
+          "semantic": {
+            "display_name": "Subventions d'Exploitation",
+            "synonyms": ["subventions", "aides", "74"],
+            "description": "Subventions d'exploitation reçues. Compte 74.",
+            "logic": {
+              "inclusion": "Compte 74.",
+              "exclusion": "Aucune."
+            },
+            "higher_is_better": true,
+            "importance_level": 4,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "exploitation", "sig", "pcg_classe7"]
+          },
+          "execution": {
+            "macro": "solde_passif",
+            "include_prefixes": ["74"],
+            "prefix_match_length": 2
+          }
+        },
+
+        {
+          "rubrique_key": "impots_taxes",
+          "semantic": {
+            "display_name": "Impôts et Taxes",
+            "synonyms": ["taxes", "contributions", "CET", "CFE", "CVAE", "63"],
+            "description": "Impôts, taxes et versements assimilés. Compte 63.",
+            "logic": {
+              "inclusion": "Compte 63 et sous-comptes.",
+              "exclusion": "IS (695) qui est hors exploitation."
+            },
+            "higher_is_better": false,
+            "importance_level": 6,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "exploitation", "sig", "pcg_classe6"]
+          },
+          "execution": {
+            "macro": "solde_actif",
+            "include_prefixes": ["63"],
+            "prefix_match_length": 2
+          }
+        },
+
+        {
+          "rubrique_key": "dotations_amortissements",
+          "semantic": {
+            "display_name": "Dotations aux Amortissements et Provisions",
+            "synonyms": ["DAP", "amortissements", "provisions", "dotations", "68"],
+            "description": "Dotations aux amortissements, dépréciations et provisions d'exploitation. Compte 68.",
+            "logic": {
+              "inclusion": "Compte 68 et sous-comptes (681 amortissements, 686 financier, 687 exceptionnel).",
+              "exclusion": "Aucune."
+            },
+            "higher_is_better": false,
+            "importance_level": 7,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "exploitation", "sig", "pcg_classe6"]
+          },
+          "execution": {
+            "macro": "solde_actif",
+            "include_prefixes": ["681"],
+            "prefix_match_length": 3
+          }
+        },
+
+        {
+          "rubrique_key": "reprises_amortissements",
+          "semantic": {
+            "display_name": "Reprises sur Amortissements et Provisions",
+            "synonyms": ["reprises", "78"],
+            "description": "Reprises sur amortissements, dépréciations et provisions d'exploitation. Compte 781.",
+            "logic": {
+              "inclusion": "Compte 781.",
+              "exclusion": "Reprises financières (786) et exceptionnelles (787)."
+            },
+            "higher_is_better": true,
+            "importance_level": 5,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "exploitation", "sig", "pcg_classe7"]
+          },
+          "execution": {
+            "macro": "solde_passif",
+            "include_prefixes": ["781"],
+            "prefix_match_length": 3
+          }
+        },
+
+        {
+          "rubrique_key": "autres_produits_exploitation",
+          "semantic": {
+            "display_name": "Autres Produits d'Exploitation",
+            "synonyms": ["produits divers", "75"],
+            "description": "Autres produits de gestion courante. Compte 75.",
+            "logic": {
+              "inclusion": "Compte 75.",
+              "exclusion": "Aucune."
+            },
+            "higher_is_better": true,
+            "importance_level": 4,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "exploitation", "sig", "pcg_classe7"]
+          },
+          "execution": {
+            "macro": "solde_passif",
+            "include_prefixes": ["75"],
+            "prefix_match_length": 2
+          }
+        },
+
+        {
+          "rubrique_key": "autres_charges_exploitation",
+          "semantic": {
+            "display_name": "Autres Charges d'Exploitation",
+            "synonyms": ["charges diverses", "65"],
+            "description": "Autres charges de gestion courante. Compte 65.",
+            "logic": {
+              "inclusion": "Compte 65.",
+              "exclusion": "Aucune."
+            },
+            "higher_is_better": false,
+            "importance_level": 4,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "exploitation", "sig", "pcg_classe6"]
+          },
+          "execution": {
+            "macro": "solde_actif",
+            "include_prefixes": ["65"],
+            "prefix_match_length": 2
+          }
+        },
+
+        {
+          "rubrique_key": "resultat_exploitation",
+          "semantic": {
+            "display_name": "Résultat d'Exploitation",
+            "synonyms": ["REX", "résultat opérationnel", "EBIT"],
+            "description": "Résultat de l'activité courante d'exploitation : tous les produits d'exploitation (70-75, 781) moins toutes les charges d'exploitation (60-65, 681).",
+            "logic": {
+              "inclusion": "Produits : 70-75, 781. Charges : 60-65, 681.",
+              "exclusion": "Résultat financier (66/76), exceptionnel (67/77), IS (695)."
+            },
+            "higher_is_better": true,
+            "importance_level": 9,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "exploitation", "sig"]
+          },
+          "execution": {
+            "macro": "composite",
+            "composite_parts": [
+              {
+                "include_prefixes": ["70", "71", "72", "74", "75"],
+                "prefix_match_length": 2,
+                "polarity": "credit_moins_debit"
+              },
+              {
+                "include_prefixes": ["781"],
+                "prefix_match_length": 3,
+                "polarity": "credit_moins_debit"
+              },
+              {
+                "include_prefixes": ["60", "61", "62", "63", "64", "65"],
+                "prefix_match_length": 2,
+                "polarity": "debit_moins_credit",
+                "sign": "negative"
+              },
+              {
+                "include_prefixes": ["681"],
+                "prefix_match_length": 3,
+                "polarity": "debit_moins_credit",
+                "sign": "negative"
+              }
+            ]
+          }
+        },
+
+        {
+          "rubrique_key": "resultat_financier",
+          "semantic": {
+            "display_name": "Résultat Financier",
+            "synonyms": ["résultat financier", "produits financiers moins charges financières"],
+            "description": "Produits financiers (76, 786) moins charges financières (66, 686).",
+            "logic": {
+              "inclusion": "Produits : 76, 786. Charges : 66, 686.",
+              "exclusion": "Aucune."
+            },
+            "higher_is_better": true,
+            "importance_level": 7,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "financier", "sig"]
+          },
+          "execution": {
+            "macro": "composite",
+            "composite_parts": [
+              {
+                "include_prefixes": ["76"],
+                "prefix_match_length": 2,
+                "polarity": "credit_moins_debit"
+              },
+              {
+                "include_prefixes": ["786"],
+                "prefix_match_length": 3,
+                "polarity": "credit_moins_debit"
+              },
+              {
+                "include_prefixes": ["66"],
+                "prefix_match_length": 2,
+                "polarity": "debit_moins_credit",
+                "sign": "negative"
+              },
+              {
+                "include_prefixes": ["686"],
+                "prefix_match_length": 3,
+                "polarity": "debit_moins_credit",
+                "sign": "negative"
+              }
+            ]
+          }
+        },
+
+        {
+          "rubrique_key": "resultat_courant_avant_impot",
+          "semantic": {
+            "display_name": "Résultat Courant Avant Impôt",
+            "synonyms": ["RCAI", "résultat courant"],
+            "description": "Résultat d'exploitation + résultat financier. Mesure la performance récurrente avant éléments exceptionnels et IS.",
+            "logic": {
+              "inclusion": "Produits exploitation + produits financiers - charges exploitation - charges financières.",
+              "exclusion": "Résultat exceptionnel (67/77), IS (695)."
+            },
+            "higher_is_better": true,
+            "importance_level": 8,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "sig"]
+          },
+          "execution": {
+            "macro": "composite",
+            "composite_parts": [
+              {
+                "include_prefixes": ["70", "71", "72", "74", "75", "76"],
+                "prefix_match_length": 2,
+                "polarity": "credit_moins_debit"
+              },
+              {
+                "include_prefixes": ["781", "786"],
+                "prefix_match_length": 3,
+                "polarity": "credit_moins_debit"
+              },
+              {
+                "include_prefixes": ["60", "61", "62", "63", "64", "65", "66"],
+                "prefix_match_length": 2,
+                "polarity": "debit_moins_credit",
+                "sign": "negative"
+              },
+              {
+                "include_prefixes": ["681", "686"],
+                "prefix_match_length": 3,
+                "polarity": "debit_moins_credit",
+                "sign": "negative"
+              }
+            ]
+          }
+        },
+
+        {
+          "rubrique_key": "resultat_exceptionnel",
+          "semantic": {
+            "display_name": "Résultat Exceptionnel",
+            "synonyms": ["exceptionnel", "hors exploitation"],
+            "description": "Produits exceptionnels (77, 787) moins charges exceptionnelles (67, 687).",
+            "logic": {
+              "inclusion": "Produits : 77, 787. Charges : 67, 687.",
+              "exclusion": "Aucune."
+            },
+            "higher_is_better": true,
+            "importance_level": 6,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "exceptionnel", "sig"]
+          },
+          "execution": {
+            "macro": "composite",
+            "composite_parts": [
+              {
+                "include_prefixes": ["77"],
+                "prefix_match_length": 2,
+                "polarity": "credit_moins_debit"
+              },
+              {
+                "include_prefixes": ["787"],
+                "prefix_match_length": 3,
+                "polarity": "credit_moins_debit"
+              },
+              {
+                "include_prefixes": ["67"],
+                "prefix_match_length": 2,
+                "polarity": "debit_moins_credit",
+                "sign": "negative"
+              },
+              {
+                "include_prefixes": ["687"],
+                "prefix_match_length": 3,
+                "polarity": "debit_moins_credit",
+                "sign": "negative"
+              }
+            ]
+          }
+        },
+
+        {
+          "rubrique_key": "impot_sur_les_benefices",
+          "semantic": {
+            "display_name": "Impôt sur les Bénéfices",
+            "synonyms": ["IS", "impôt sociétés", "695"],
+            "description": "Impôt sur les bénéfices (IS). Compte 695.",
+            "logic": {
+              "inclusion": "Compte 695.",
+              "exclusion": "Impôts et taxes d'exploitation (63)."
+            },
+            "higher_is_better": false,
+            "importance_level": 7,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "sig", "pcg_classe6"]
+          },
+          "execution": {
+            "macro": "solde_actif",
+            "include_prefixes": ["695"],
+            "prefix_match_length": 3
+          }
+        },
+
+        {
           "rubrique_key": "resultat_net",
           "semantic": {
             "display_name": "Résultat Net",
@@ -458,7 +843,16 @@
     {
       "name": "SIG_simplifie",
       "displayName": "Soldes Intermédiaires de Gestion (simplifié)",
-      "rubrique_keys": ["chiffre_affaires", "masse_salariale", "excedent_brut_exploitation", "resultat_net"]
+      "rubrique_keys": [
+        "chiffre_affaires", "consommations", "valeur_ajoutee",
+        "subventions_exploitation", "impots_taxes", "masse_salariale",
+        "excedent_brut_exploitation",
+        "dotations_amortissements", "reprises_amortissements",
+        "autres_produits_exploitation", "autres_charges_exploitation",
+        "resultat_exploitation", "resultat_financier",
+        "resultat_courant_avant_impot", "resultat_exceptionnel",
+        "impot_sur_les_benefices", "resultat_net"
+      ]
     },
     {
       "name": "structure_endettement",

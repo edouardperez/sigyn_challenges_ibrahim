@@ -119,6 +119,11 @@ def _infer_key_from_label(label: str) -> str | None:
         "endettement net": "endettement_net",
         "trésorerie active": "tresorerie_active",
         "ressources propres": "ressources_propres_elargies",
+        "valeur ajoutée": "valeur_ajoutee",
+        "excédent brut": "excedent_brut_exploitation",
+        "résultat d'exploitation": "resultat_exploitation",
+        "résultat courant": "resultat_courant_avant_impot",
+        "résultat net": "resultat_net",
     }
     label_lower = label.lower()
     for pattern, key in mapping.items():

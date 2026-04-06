@@ -1,6 +1,58 @@
 {
   "waterfalls": [
     {
+      "waterfall_key": "sig_simplifie",
+      "display_name": "Cascade SIG simplifié",
+      "sections": [
+        {
+          "section_label": "Valeur Ajoutée",
+          "steps": [
+            { "rubrique_key": "chiffre_affaires", "label": "Chiffre d'Affaires (70-72)", "operator": "base" },
+            { "rubrique_key": "consommations", "label": "- Consommations (60-62)", "operator": "subtract" },
+            { "label": "= Valeur Ajoutée", "operator": "subtotal" }
+          ]
+        },
+        {
+          "section_label": "Excédent Brut d'Exploitation",
+          "steps": [
+            { "ref": "valeur_ajoutee", "label": "Valeur Ajoutée", "operator": "base" },
+            { "rubrique_key": "subventions_exploitation", "label": "+ Subventions d'exploitation (74)", "operator": "add" },
+            { "rubrique_key": "impots_taxes", "label": "- Impôts et taxes (63)", "operator": "subtract" },
+            { "rubrique_key": "masse_salariale", "label": "- Charges de personnel (64)", "operator": "subtract" },
+            { "label": "= Excédent Brut d'Exploitation (EBE)", "operator": "subtotal", "highlight": true }
+          ]
+        },
+        {
+          "section_label": "Résultat d'Exploitation",
+          "steps": [
+            { "ref": "excedent_brut_exploitation", "label": "EBE", "operator": "base" },
+            { "rubrique_key": "reprises_amortissements", "label": "+ Reprises amortissements/provisions (781)", "operator": "add" },
+            { "rubrique_key": "autres_produits_exploitation", "label": "+ Autres produits exploitation (75)", "operator": "add" },
+            { "rubrique_key": "dotations_amortissements", "label": "- Dotations amortissements/provisions (681)", "operator": "subtract" },
+            { "rubrique_key": "autres_charges_exploitation", "label": "- Autres charges exploitation (65)", "operator": "subtract" },
+            { "label": "= Résultat d'Exploitation", "operator": "subtotal", "highlight": true }
+          ]
+        },
+        {
+          "section_label": "Résultat Courant Avant Impôt",
+          "steps": [
+            { "ref": "resultat_exploitation", "label": "Résultat d'Exploitation", "operator": "base" },
+            { "rubrique_key": "resultat_financier", "label": "+/- Résultat financier (76-66)", "operator": "add" },
+            { "label": "= Résultat Courant Avant Impôt (RCAI)", "operator": "subtotal", "highlight": true }
+          ]
+        },
+        {
+          "section_label": "Résultat Net",
+          "steps": [
+            { "ref": "resultat_courant_avant_impot", "label": "RCAI", "operator": "base" },
+            { "rubrique_key": "resultat_exceptionnel", "label": "+/- Résultat exceptionnel (77-67)", "operator": "add" },
+            { "rubrique_key": "impot_sur_les_benefices", "label": "- Impôt sur les bénéfices (695)", "operator": "subtract" },
+            { "label": "= Résultat Net", "operator": "result", "highlight": true }
+          ]
+        }
+      ]
+    },
+    {
       "waterfall_key": "endettement_complet",
       "display_name": "Cascade d'endettement",
       "sections": [
