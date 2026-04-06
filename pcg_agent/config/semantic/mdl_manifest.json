@@ -1,0 +1,469 @@
+{
+  "catalog": "pcg_fec_analysis",
+  "version": "3.1",
+  "source": "FEC (Fichier des Écritures Comptables)",
+
+  "macros": {
+    "solde_passif": {
+      "description": "Solde crédit - débit pour comptes de passif.",
+      "polarity": "credit_moins_debit"
+    },
+    "solde_actif": {
+      "description": "Solde débit - crédit pour comptes d'actif.",
+      "polarity": "debit_moins_credit"
+    }
+  },
+
+  "models": [
+    {
+      "name": "FEC",
+      "tableReference": "fec",
+      "properties": {
+        "forbidden_operations": ["INSERT", "UPDATE", "DELETE", "DROP", "TRUNCATE"],
+        "exclude_journals_for_flux": ["AN"]
+      },
+      "columns": [
+        { "name": "numero_compte",  "type": "VARCHAR", "supports_prefix_match": true },
+        { "name": "libelle_compte", "type": "VARCHAR", "searchable": true },
+        { "name": "exercice",       "type": "INTEGER", "filterable": true },
+        { "name": "mois",           "type": "INTEGER", "filterable": true },
+        { "name": "journal_code",   "type": "VARCHAR", "filterable": true },
+        { "name": "debit",          "type": "DECIMAL", "aggregatable": true },
+        { "name": "credit",         "type": "DECIMAL", "aggregatable": true }
+      ],
+
+      "calculatedFields": [
+
+        {
+          "rubrique_key": "capitaux_propres",
+          "semantic": {
+            "display_name": "Capitaux Propres",
+            "synonyms": ["fonds propres", "equity", "CP", "situation nette", "ressources propres"],
+            "description": "Ressources propres de l'entreprise : capital, réserves, report à nouveau et résultat de l'exercice, nets des postes débiteurs.",
+            "logic": {
+              "inclusion": "Comptes 101 (capital), 106 (réserves), 110 (report à nouveau créditeur), 120 (résultat bénéficiaire)"            },
+            "higher_is_better": true,
+            "importance_level": 10,
+            "domain_category": "bilan_passif",
+            "bilan_section": "Passif — Capitaux propres",
+            "tags": ["bilan", "passif", "solvabilite", "ressources_stables", "pcg_classe1"],
+            "relationships": {
+              "part_of": "total_passif",
+              "used_in_ratio": ["taux_endettement_brut", "taux_endettement_net", "ratio_autonomie_financiere"],
+              "related_to": ["compte_courant_associes", "endettement_financier_brut"]
+            }
+          },
+          "execution": {
+            "macro": "composite",
+            "composite_parts": [
+              {
+                "comment": "Comptes structurellement créditeurs : capital,  réserves, Report à nouveau créditeur, Resultat Beneficiare",
+                "include_prefixes": ["101", "106", "110", "120"],
+                "prefix_match_length": 3,
+                "polarity": "credit_moins_debit"
+              },
+              {
+                "comment": "Compte 119 : report à nouveau DEBITEUR — toujours négatif, vient en déduction",
+                "include_prefixes": ["119"],
+                "prefix_match_length": 3,
+                "polarity": "debit_moins_credit",
+                "sign": "negative"
+              },
+
+              {
+                "comment": "Compte 129 : résultat DEFICITAIRE — toujours débiteur, vient en déduction",
+                "include_prefixes": ["129"],
+                "prefix_match_length": 3,
+                "polarity": "debit_moins_credit",
+                "sign": "negative"
+              }
+            ]
+          }
+        },
+        {
+          "rubrique_key": "capital_souscrit_non_appele",
+          "semantic": {
+            "display_name": "Capital Souscrit Non Appelé",
+            "synonyms": ["CSNA", "capital non appelé", "capital non libéré", "109"],
+            "description": "Fraction du capital souscrit par les actionnaires mais non encore appelée. Créance de la société sur ses actionnaires.",
+            "logic": {
+              "inclusion": "Compte 109 uniquement.",
+              "exclusion": "Ne pas confondre avec le compte 4562 (capital appelé non versé) qui intervient après l'appel.",
+              "intuition": "Toujours débiteur. Rubrique source pour la metric capitaux_propres_nets — son montant vient en déduction des capitaux propres bruts."
+            },
+            "higher_is_better": false,
+            "importance_level": 4,
+            "domain_category": "bilan_passif",
+            "bilan_section": "Actif — Capital souscrit non appelé",
+            "tags": ["bilan", "actif", "csna", "source_metric", "retraitement_fonctionnel", "pcg_classe1"],
+            "relationships": {
+              "related_to": ["capitaux_propres_bruts", "capitaux_propres_nets"]
+            }
+          },
+          "execution": {
+            "macro": "solde_actif",
+            "include_prefixes": ["109"],
+            "prefix_match_length": 3
+          }
+        },
+
+        {
+          "rubrique_key": "endettement_brut",
+          "semantic": {
+            "display_name": "Endettement Financier Brut",
+            "synonyms": ["dettes financières", "dette brute", "emprunts"],
+            "description": "Total des dettes financières : emprunts LT (164, 168) + concours bancaires courants (519). Exclut les dettes fournisseurs (401).",
+            "logic": {
+              "inclusion": "Comptes 164 (emprunts bancaires), 168 (autres emprunts), 519 (CBC/découverts).",
+              "exclusion": "Dettes fournisseurs (401), dettes sociales/fiscales (43, 44) — ce ne sont pas des dettes financières."
+            },
+            "higher_is_better": false,
+            "importance_level": 9,
+            "domain_category": "bilan_passif",
+            "tags": ["bilan", "passif", "endettement", "pcg_classe1"],
+            "relationships": {
+              "used_in_ratio": ["taux_endettement_brut", "taux_endettement_net", "cout_dette"],
+              "related_to": ["charges_interets", "tresorerie_active"]
+            }
+          },
+          "execution": {
+            "macro": "solde_passif",
+            "include_prefixes": ["164", "168", "519"],
+            "prefix_match_length": 3
+          }
+        },
+
+        {
+          "rubrique_key": "emprunts_lt",
+          "semantic": {
+            "display_name": "Emprunts Long Terme",
+            "synonyms": ["emprunts bancaires", "dettes LT", "164"],
+            "description": "Emprunts auprès des établissements de crédit (164) et autres emprunts (168).",
+            "logic": {
+              "inclusion": "Comptes 164, 168.",
+              "exclusion": "Aucune."
+            },
+            "higher_is_better": false,
+            "importance_level": 7,
+            "domain_category": "bilan_passif",
+            "tags": ["bilan", "passif", "endettement", "pcg_classe1"]
+          },
+          "execution": {
+            "macro": "solde_passif",
+            "include_prefixes": ["164", "168"],
+            "prefix_match_length": 3
+          }
+        },
+
+        {
+          "rubrique_key": "concours_bancaires_courants",
+          "semantic": {
+            "display_name": "Concours Bancaires Courants",
+            "synonyms": ["CBC", "découvert bancaire", "519"],
+            "description": "Découverts et facilités de caisse. Compte 519.",
+            "logic": {
+              "inclusion": "Compte 519.",
+              "exclusion": "Aucune."
+            },
+            "higher_is_better": false,
+            "importance_level": 6,
+            "domain_category": "bilan_passif",
+            "tags": ["bilan", "passif", "tresorerie", "pcg_classe5"]
+          },
+          "execution": {
+            "macro": "solde_passif",
+            "include_prefixes": ["519"],
+            "prefix_match_length": 3
+          }
+        },
+
+        {
+          "rubrique_key": "disponibilites",
+          "semantic": {
+            "display_name": "Disponibilités",
+            "synonyms": ["banque", "caisse", "comptes bancaires"],
+            "description": "Soldes bancaires (512) + caisse (530/531). Sans distinction positif/négatif.",
+            "logic": {
+              "inclusion": "Comptes 512 (banque), 530 (caisse siège), 531 (caisse succursale).",
+              "exclusion": "Aucune."
+            },
+            "higher_is_better": true,
+            "importance_level": 7,
+            "domain_category": "bilan_actif",
+            "tags": ["bilan", "actif", "tresorerie", "pcg_classe5"]
+          },
+          "execution": {
+            "macro": "solde_actif",
+            "include_prefixes": ["512", "530", "531"],
+            "prefix_match_length": 3
+          }
+        },
+
+        {
+          "rubrique_key": "vmp_liquides",
+          "semantic": {
+            "display_name": "VMP Liquides",
+            "synonyms": ["placements", "SICAV", "VMP"],
+            "description": "Valeurs mobilières de placement liquides et sans risque (SICAV monétaires). Comptes 50x.",
+            "logic": {
+              "inclusion": "Comptes 50x.",
+              "exclusion": "Aucune."
+            },
+            "higher_is_better": true,
+            "importance_level": 5,
+            "domain_category": "bilan_actif",
+            "tags": ["bilan", "actif", "tresorerie", "pcg_classe5"]
+          },
+          "execution": {
+            "macro": "solde_actif",
+            "include_prefixes": ["50"],
+            "prefix_match_length": 2
+          }
+        },
+
+        {
+          "rubrique_key": "chiffre_affaires",
+          "semantic": {
+            "display_name": "Chiffre d'Affaires",
+            "synonyms": ["CA", "ventes", "revenus", "turnover"],
+            "description": "Total des ventes et prestations de services. Comptes 70 à 72.",
+            "logic": {
+              "inclusion": "Comptes 70 (ventes), 71 (production stockée), 72 (production immobilisée).",
+              "exclusion": "Aucune."
+            },
+            "higher_is_better": true,
+            "importance_level": 10,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "exploitation", "pcg_classe7"]
+          },
+          "execution": {
+            "macro": "solde_passif",
+            "include_prefixes": ["70", "71", "72"],
+            "prefix_match_length": 2
+          }
+        },
+
+        {
+          "rubrique_key": "masse_salariale",
+          "semantic": {
+            "display_name": "Masse Salariale",
+            "synonyms": ["charges de personnel", "salaires", "payroll"],
+            "description": "Rémunérations (641) + charges sociales (645)",
+            "logic": {
+              "inclusion": "Comptes 641 (rémunérations) et 645 (charges sociales).",
+              "exclusion": "Aucune."
+            },
+            "higher_is_better": false,
+            "importance_level": 8,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "exploitation", "pcg_classe6", "secteur_coiffure"],
+            "relationships": {
+              "used_in_ratio": ["poids_masse_salariale"]
+            }
+          },
+          "execution": {
+            "macro": "solde_actif",
+            "include_prefixes": ["64"],
+            "prefix_match_length": 2
+          }
+        },
+
+        {
+          "rubrique_key": "charges_interets",
+          "semantic": {
+            "display_name": "Charges d'Intérêts",
+            "synonyms": ["intérêts", "frais financiers", "coût de la dette", "661"],
+            "description": "Coût des emprunts et dettes financières. Compte 661 et sous-comptes.",
+            "logic": {
+              "inclusion": "Compte 661 et sous-comptes.",
+              "exclusion": "Aucune.",
+              "intuition": "Les comptes 66x (charges financières) mirroritent les 16x (dettes financières). Le 661 = coût du 164."
+            },
+            "higher_is_better": false,
+            "importance_level": 6,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "financier", "pcg_classe6"],
+            "relationships": {
+              "used_in_ratio": ["cout_dette"],
+              "related_to": ["endettement_brut"]
+            }
+          },
+          "execution": {
+            "macro": "solde_actif",
+            "include_prefixes": ["661"],
+            "prefix_match_length": 3
+          }
+        },
+
+        {
+          "rubrique_key": "compte_courant_associes",
+          "semantic": {
+            "display_name": "Comptes Courants d'Associés",
+            "synonyms": ["CCA", "avance associé", "current account", "455"],
+            "description": "Avances des associés à la société. Comptablement = dette (classe 4, compte 455). Économiquement = quasi-fonds propres si l'associé s'engage à ne pas retirer.",
+            "logic": {
+              "inclusion": "Compte 455.",
+              "exclusion": "Aucune."
+            },
+            "higher_is_better": null,
+            "importance_level": 7,
+            "domain_category": "zone_grise",
+            "tags": ["bilan", "zone_grise", "pcg_classe4"],
+            "reclassement": {
+              "default_classification": "dettes_hors_exploitation",
+              "alternative_classification": "quasi_fonds_propres",
+              "switch_condition": "convention_blocage_or_user_choice",
+              "impact_on_ratios": ["taux_endettement_brut", "taux_endettement_net"],
+              "dual_scenario": true,
+              "note": "Si reclassé en quasi-FP : numérateur baisse (moins de dettes) ET dénominateur monte (plus de FP) → double effet positif sur les ratios."
+            }
+          },
+          "execution": {
+            "macro": "solde_passif",
+            "include_prefixes": ["455"],
+            "prefix_match_length": 3,
+            "reclassement": "conditional"
+          }
+        },
+        {
+          "rubrique_key": "tresorerie_active",
+          "semantic": {
+            "display_name": "Trésorerie Active",
+            "synonyms": ["cash", "liquidités", "disponibilités"],
+            "description": "Cash réellement disponible : disponibilités bancaires positives (512) + caisse (530/531) + VMP liquides (50x).",
+            "logic": {
+              "inclusion": "Comptes 512 (banque, si positif), 530/531 (caisse), 50x (VMP si liquides et sans risque).",
+              "exclusion": "Soldes bancaires négatifs (reclassés en trésorerie passive)."
+            },
+            "higher_is_better": true,
+            "importance_level": 8,
+            "domain_category": "bilan_actif",
+            "tags": ["bilan", "actif", "tresorerie", "pcg_classe5"]
+          },
+          "execution": {
+            "macro": "solde_actif",
+            "include_prefixes": ["512", "530", "531"],
+            "prefix_match_length": 3,
+            "polarity": "debit_moins_credit"
+          }
+        },
+
+        {
+          "rubrique_key": "tresorerie_passive",
+          "semantic": {
+            "display_name": "Trésorerie Passive",
+            "synonyms": ["découvert", "CBC", "concours bancaires"],
+            "description": "Financement CT subi : concours bancaires courants (519) + soldes bancaires négatifs.",
+            "logic": {
+              "inclusion": "Compte 519 + comptes 512 si solde créditeur (découvert).",
+              "exclusion": "Aucune."
+            },
+            "higher_is_better": false,
+            "importance_level": 8,
+            "domain_category": "bilan_passif",
+            "tags": ["bilan", "passif", "tresorerie", "pcg_classe5"]
+          },
+          "execution": {
+            "macro": "composite",
+            "composite_parts": [
+              {
+                "include_prefixes": ["519"],
+                "prefix_match_length": 3,
+                "polarity": "credit_moins_debit"
+              },
+              {
+                "include_prefixes": ["512", "530", "531"],
+                "prefix_match_length": 3,
+                "polarity": "credit_moins_debit",
+                "condition": "solde_negative"
+              }
+            ]
+          }
+        },
+        {
+          "rubrique_key": "excedent_brut_exploitation",
+          "semantic": {
+            "display_name": "Excédent Brut d'Exploitation (EBE)",
+            "synonyms": ["EBE", "EBITDA", "cash-flow opérationnel brut", "résultat avant amortissements"],
+            "description": "Résultat de l'exploitation avant dotations aux amortissements et provisions. Indicateur clé de la performance opérationnelle : produits d'exploitation (70-72, 74) moins charges d'exploitation courantes (60-64).",
+            "logic": {
+              "inclusion": "Produits : 70 (CA), 71 (production stockée), 72 (production immobilisée), 74 (subventions exploitation). Charges : 60 (achats), 61-62 (services extérieurs), 63 (impôts et taxes), 64 (charges de personnel).",
+              "exclusion": "Dotations amortissements/provisions (68x), charges financières (66x), charges exceptionnelles (67x), IS (69x)."
+            },
+            "higher_is_better": true,
+            "importance_level": 10,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "exploitation", "sig"],
+            "relationships": {
+              "used_in_ratio": ["marge_ebe"],
+              "related_to": ["chiffre_affaires", "masse_salariale"]
+            }
+          },
+          "execution": {
+            "macro": "composite",
+            "composite_parts": [
+              {
+                "include_prefixes": ["70", "71", "72", "74"],
+                "prefix_match_length": 2,
+                "polarity": "credit_moins_debit"
+              },
+              {
+                "include_prefixes": ["60", "61", "62", "63", "64"],
+                "prefix_match_length": 2,
+                "polarity": "debit_moins_credit",
+                "sign": "negative"
+              }
+            ]
+          }
+        },
+
+        {
+          "rubrique_key": "resultat_net",
+          "semantic": {
+            "display_name": "Résultat Net",
+            "synonyms": ["résultat", "bénéfice", "perte", "bottom line"],
+            "description": "Produits (classe 7) moins charges (classe 6). Résultat final de l'exercice.",
+            "logic": {
+              "inclusion": "Toute la classe 7 (produits) moins toute la classe 6 (charges).",
+              "exclusion": "Aucune."
+            },
+            "higher_is_better": true,
+            "importance_level": 10,
+            "domain_category": "compte_de_resultat",
+            "tags": ["resultat", "synthese"]
+          },
+          "execution": {
+            "macro": "composite",
+            "composite_parts": [
+              {
+                "include_prefixes": ["7"],
+                "prefix_match_length": 1,
+                "polarity": "credit_moins_debit"
+              },
+              {
+                "include_prefixes": ["6"],
+                "prefix_match_length": 1,
+                "polarity": "debit_moins_credit",
+                "sign": "negative"
+              }
+            ]
+          }
+        }
+
+      ]
+    }
+  ],
+
+  "views": [
+    {
+      "name": "SIG_simplifie",
+      "displayName": "Soldes Intermédiaires de Gestion (simplifié)",
+      "rubrique_keys": ["chiffre_affaires", "masse_salariale", "excedent_brut_exploitation", "resultat_net"]
+    },
+    {
+      "name": "structure_endettement",
+      "displayName": "Structure d'endettement complète",
+      "rubrique_keys": ["capitaux_propres", "endettement_brut", "tresorerie_active", "tresorerie_passive"]
+    }
+  ]
+}

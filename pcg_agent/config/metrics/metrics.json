@@ -1,0 +1,159 @@
+{
+  "metrics": [
+    {
+      "metric_key": "capitaux_propres_nets",
+      "metric_type": "ratio",
+      "display_name": "Capitaux Propres appelés",
+      "rubrique_keys": ["capitaux_propres", "capital_souscrit_non_appele"],
+      "formula": "capitaux_propres - capital_souscrit_non_appele",
+      "result": {
+        "op": "subtract",
+        "left": "capitaux_propres",
+        "right": "capital_souscrit_non_appele"
+      },
+      "output_format": "euros",
+      "higher_is_better": true,
+      "thresholds": {
+        "healthy": {
+          "min": 10000,
+          "label": "Situation nette positive et suffisante"
+        },
+        "warning": {
+          "min": 0,
+          "max": 10000,
+          "label": "Capitaux propres positifs mais très faibles — capacité d'emprunt limitée"
+        },
+        "critical": {
+          "max": 0,
+          "label": "Situation nette négative — capitaux propres insuffisants, risque d'insolvabilité"
+        }
+      },
+      "sector_comparison": true,
+      "sector_specific": "96.02A",
+      "note": "Capitaux propres effectivement disponibles après neutralisation du capital souscrit non appelé (CSNA, compte 109). En bilan fonctionnel, le CSNA est éliminé symétriquement à l'actif et au passif — ce montant représente la situation nette réelle. Pour RD Cannes, surveiller tout résultat négatif récurrent qui érode progressivement ce poste."
+    },
+    {
+      "metric_key": "taux_endettement_brut",
+      "metric_type": "ratio",
+      "display_name": "Taux d'Endettement Brut",
+      "rubrique_keys": ["endettement_brut", "capitaux_propres"],
+      "formula": "endettement_brut / capitaux_propres",
+      "result": {
+        "op": "divide",
+        "left":  "endettement_brut",
+        "right": "capitaux_propres"
+      },
+      "output_format": "multiple",
+      "higher_is_better": false,
+      "thresholds": {
+        "healthy":  { "max": 1.0, "label": "Endettement maîtrisé (< 1x)" },
+        "warning":  { "min": 1.0, "max": 3.0, "label": "Endettement élevé (1-3x)" },
+        "critical": { "min": 3.0, "label": "Endettement excessif (> 3x)" }
+      },
+      "sector_comparison": true,
+      "caveat_if_low_equity": {
+        "threshold_cp": 10000,
+        "message": "CP très faibles — le ratio est mécaniquement élevé sans que l'endettement soit anormalement fort."
+      }
+    },
+
+    {
+      "metric_key": "taux_endettement_net",
+      "metric_type": "ratio",
+      "display_name": "Taux d'Endettement Net",
+      "rubrique_keys": ["endettement_brut", "tresorerie_active", "capitaux_propres"],
+      "formula": "(endettement_brut - tresorerie_active) / capitaux_propres",
+      "result": {
+        "op": "divide",
+        "left":  { "op": "subtract", "left": "endettement_brut", "right": "tresorerie_active" },
+        "right": "capitaux_propres"
+      },
+      "output_format": "multiple",
+      "higher_is_better": false,
+      "thresholds": {
+        "healthy":  { "max": 1.0, "label": "Endettement net maîtrisé" },
+        "warning":  { "min": 1.0, "max": 3.0, "label": "Endettement net élevé" },
+        "critical": { "min": 3.0, "label": "Endettement net critique" }
+      },
+      "sector_comparison": true
+    },
+
+    {
+      "metric_key": "cout_dette",
+      "metric_type": "ratio",
+      "display_name": "Coût Moyen de la Dette",
+      "rubrique_keys": ["charges_interets", "endettement_brut"],
+      "formula": "charges_interets / endettement_brut",
+      "result": {
+        "op": "divide",
+        "left":  "charges_interets",
+        "right": "endettement_brut"
+      },
+      "output_format": "percentage",
+      "higher_is_better": false,
+      "thresholds": {
+        "healthy":  { "max": 0.05, "label": "Coût raisonnable (< 5%)" },
+        "warning":  { "min": 0.05, "max": 0.08, "label": "Coût modéré (5-8%)" },
+        "critical": { "min": 0.08, "label": "Coût élevé (> 8%)" }
+      }
+    },
+
+    {
+      "metric_key": "marge_ebe",
+      "metric_type": "ratio",
+      "display_name": "Marge EBE",
+      "rubrique_keys": ["excedent_brut_exploitation", "chiffre_affaires"],
+      "formula": "excedent_brut_exploitation / chiffre_affaires",
+      "result": {
+        "op": "divide",
+        "left":  "excedent_brut_exploitation",
+        "right": "chiffre_affaires"
+      },
+      "output_format": "percentage",
+      "higher_is_better": true,
+      "thresholds": {
+        "healthy":  { "min": 0.10, "label": "Marge saine (> 10%)" },
+        "warning":  { "min": 0.05, "max": 0.10, "label": "Marge faible (5-10%)" },
+        "critical": { "max": 0.05, "label": "Marge très faible (< 5%)" }
+      }
+    },
+
+    {
+      "metric_key": "poids_masse_salariale",
+      "metric_type": "ratio",
+      "display_name": "Poids de la Masse Salariale",
+      "rubrique_keys": ["masse_salariale", "chiffre_affaires"],
+      "formula": "masse_salariale / chiffre_affaires",
+      "result": {
+        "op": "divide",
+        "left":  "masse_salariale",
+        "right": "chiffre_affaires"
+      },
+      "output_format": "percentage",
+      "higher_is_better": false,
+      "thresholds": {
+        "healthy":  { "max": 0.45, "label": "Maîtrisée (< 45%)" },
+        "warning":  { "min": 0.45, "max": 0.55, "label": "Élevée (45-55%)" },
+        "critical": { "min": 0.55, "label": "Critique (> 55%)" }
+      },
+      "sector_specific": "96.02A",
+      "note": "En coiffure, la masse salariale est le premier poste. Médiane secteur ~42%."
+    }
+  ],
+
+  "rubrique_alerts": {
+    "tresorerie_active": {
+      "critical": { "max": 0, "label": "Trésorerie négative — risque de cessation de paiements." }
+    },
+    "capitaux_propres": {
+      "critical": { "max": 0,     "label": "Capitaux propres négatifs — situation nette déficitaire." },
+      "warning":  { "max": 10000, "label": "Capitaux propres très faibles — capacité d'emprunt limitée." }
+    },
+    "excedent_brut_exploitation": {
+      "critical": { "max": 0, "label": "EBE négatif — activité structurellement non rentable." }
+    },
+    "resultat_net": {
+      "critical": { "max": 0, "label": "Résultat déficitaire." }
+    }
+  }
+}

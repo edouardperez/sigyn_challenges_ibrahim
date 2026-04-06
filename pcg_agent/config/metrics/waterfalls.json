@@ -1,0 +1,42 @@
+{
+  "waterfalls": [
+    {
+      "waterfall_key": "endettement_complet",
+      "display_name": "Cascade d'endettement",
+      "sections": [
+        {
+          "section_label": "Ressources propres",
+          "steps": [
+            { "rubrique_key": "capitaux_propres", "label": "Capitaux propres", "operator": "base" },
+            { "rubrique_key": "compte_courant_associes", "label": "+ CCA (si quasi-FP)", "operator": "add", "conditional": true },
+            { "label": "= Ressources propres élargies", "operator": "subtotal" }
+          ]
+        },
+        {
+          "section_label": "Endettement",
+          "steps": [
+            { "rubrique_key": "emprunts_lt", "label": "Emprunts LT (164, 168)", "operator": "base" },
+            { "rubrique_key": "concours_bancaires_courants", "label": "+ CBC / Découverts (519)", "operator": "add" },
+            { "label": "= Endettement brut", "operator": "subtotal" }
+          ]
+        },
+        {
+          "section_label": "Trésorerie",
+          "steps": [
+            { "rubrique_key": "disponibilites", "label": "Disponibilités (512 + 531)", "operator": "base" },
+            { "rubrique_key": "vmp_liquides", "label": "+ VMP liquides", "operator": "add" },
+            { "label": "= Trésorerie active", "operator": "subtotal" }
+          ]
+        },
+        {
+          "section_label": "Synthèse",
+          "steps": [
+            { "ref": "endettement_brut", "label": "Endettement brut", "operator": "base" },
+            { "ref": "tresorerie_active", "label": "- Trésorerie active", "operator": "subtract" },
+            { "label": "= Endettement net", "operator": "result", "highlight": true }
+          ]
+        }
+      ]
+    }
+  ]
+}

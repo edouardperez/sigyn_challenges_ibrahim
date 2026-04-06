@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "skills": {
+    "assistant-ui": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "computedHash": "82394e859e4adb795729710c36ff20c6142e7670c3fa10e40cfcdf2c5367396c"
+    },
+    "cloud": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "computedHash": "e55f969f8b3d833f5ce45d241824e15f668e196ab7c3748812850406e6d2085c"
+    },
+    "firecrawl": {
+      "source": "firecrawl/cli",
+      "sourceType": "github",
+      "computedHash": "c6fc0e3b85e52803da642789ab2b654f68e04c86b7cea61580286dc04028009d"
+    },
+    "firecrawl-agent": {
+      "source": "firecrawl/cli",
+      "sourceType": "github",
+      "computedHash": "aa4f0fd47db7cedb78900e8553580c4fffc487d9bb3f8765578993a2c0353e32"
+    },
+    "firecrawl-crawl": {
+      "source": "firecrawl/cli",
+      "sourceType": "github",
+      "computedHash": "54858693da236c70f3fc01e3c2650f61e71a99ace1540528f0084b0bab5dfdc4"
+    },
+    "firecrawl-download": {
+      "source": "firecrawl/cli",
+      "sourceType": "github",
+      "computedHash": "ce7cc4c04754b1e14e748d9645ccea809451bf12bb2dc724559f4f31217094dd"
+    },
+    "firecrawl-instruct": {
+      "source": "firecrawl/cli",
+      "sourceType": "github",
+      "computedHash": "eb3d97dccee778a81c0b2fb30768065b763f7a97d5781bfc8303b1f7617e1fb0"
+    },
+    "firecrawl-map": {
+      "source": "firecrawl/cli",
+      "sourceType": "github",
+      "computedHash": "a4647a93267fe5a6a3cbde5ca944d58efab24d684311a18bb29301138f4ea419"
+    },
+    "firecrawl-scrape": {
+      "source": "firecrawl/cli",
+      "sourceType": "github",
+      "computedHash": "5758748e031f52cf602a6036a90a950537085de8cdf680f00a17ff37414dea2b"
+    },
+    "firecrawl-search": {
+      "source": "firecrawl/cli",
+      "sourceType": "github",
+      "computedHash": "3821753d4c188928524f41ffe1fa8337c08bbdc39a18967bbea9026c4670afb3"
+    },
+    "primitives": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "computedHash": "aa75be74eb86ee13e370fcd56180d0b95017f1699b569295db93d002fa4e7255"
+    },
+    "runtime": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "computedHash": "268fc13bc3aec37d11a864d3ad2e3f1b0fb0c416bc1d946f6977abcf3ab68277"
+    },
+    "setup": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "computedHash": "46d64359823dd2f311a99ad716ebd54d52ad0d5f9ce12f230f6ec9efb047e484"
+    },
+    "streaming": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "computedHash": "88fa9db6e0429bcf6f07c22bb879114b2db07d98c93cf82ee1928634ba74c0c4"
+    },
+    "thread-list": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "computedHash": "3e46e0994e2eda717d5ec626d065c7b152471d043d6969d224ffdd99aba3e374"
+    },
+    "tool-ui": {
+      "source": "assistant-ui/tool-ui",
+      "sourceType": "github",
+      "computedHash": "39516e5417921ecba72cbf2a7c034361a245202a8d355e17a227d9e02bda2d0d"
+    },
+    "tools": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "computedHash": "a5189f4ec1bf53b9565cffcc1d899c8d4e06859cb1df7a980530429fafb24a24"
+    },
+    "update": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "computedHash": "909af92da3892c434ade1a2bfdd3ebb8689f2681bcd3bf90c46e182e458d5b8a"
+    }
+  }
+}

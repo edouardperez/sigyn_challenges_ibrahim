@@ -1,0 +1,134 @@
+{
+  "agent_id": "pcg-fec-analyst-v2",
+  "language": "fr",
+  "mdl_manifest": "config/semantic/mdl_manifest.json",
+  "ontology_path": "config/ontology/",
+  "metrics_path": "config/metrics/",
+
+  "planner": {
+    "mode": "plan_execute_replan",
+    "max_steps": 8,
+    "max_replans": 2,
+    "replan_on_tool_error": true,
+    "replan_on_empty_result": true
+  },
+
+  "context_policy": {
+    "inject_domain_ontology": true,
+    "inject_sector_profile": true,
+    "relevant_concepts_top_k": 5,
+    "chat_history_window": 12,
+    "include_company_profile": true
+  },
+
+  "tools": [
+    {
+      "name": "resolve_concept",
+      "description": "Résout un terme comptable en rubrique_key PCG. Appeler quand le terme est ambigu.",
+      "input_schema": {
+        "type": "object",
+        "required": ["query"],
+        "properties": { "query": { "type": "string" } }
+      }
+    },
+    {
+      "name": "query_rubrique",
+      "description": "Calcule la valeur d'une rubrique pour un exercice donné à partir du FEC.",
+      "input_schema": {
+        "type": "object",
+        "required": ["rubrique_key", "exercice"],
+        "properties": {
+          "rubrique_key": { "type": "string" },
+          "exercice":     { "type": "integer" },
+          "mois":         { "type": "integer", "minimum": 1, "maximum": 12 }
+        }
+      },
+      "guardrails": { "readonly": true, "timeout_seconds": 30 }
+    },
+    {
+      "name": "query_metric",
+      "description": "Calcule la VALEUR d'une métrique financière (ratio, solde, marge) et l'évalue (seuils absolus + position sectorielle BdF). Utilise ceci pour répondre DIRECTEMENT à une demande de métrique (ex: 'quel est le taux d'endettement net ?').",
+      "input_schema": {
+        "type": "object",
+        "required": ["metric_key", "exercice"],
+        "properties": {
+          "metric_key": { "type": "string" },
+          "exercice":   { "type": "integer" }
+        }
+      }
+    },
+    {
+      "name": "get_trend",
+      "description": "Évolution d'une rubrique sur plusieurs périodes (mensuel ou annuel).",
+      "input_schema": {
+        "type": "object",
+        "required": ["rubrique_key", "from_year", "to_year"],
+        "properties": {
+          "rubrique_key": { "type": "string" },
+          "from_year":    { "type": "integer" },
+          "to_year":      { "type": "integer" },
+          "granularity":  { "type": "string", "enum": ["monthly", "annual"], "default": "annual" }
+        }
+      }
+    },
+    {
+      "name": "get_breakdown",
+      "description": "Décompose une rubrique en ses sous-comptes PCG (top N).",
+      "input_schema": {
+        "type": "object",
+        "required": ["rubrique_key", "exercice"],
+        "properties": {
+          "rubrique_key": { "type": "string" },
+          "exercice":     { "type": "integer" },
+          "top_n":        { "type": "integer", "default": 10 }
+        }
+      }
+    },
+    {
+      "name": "get_waterfall",
+      "description": "Retourne une cascade ordonnée montrant la DÉCOMPOSITION étape par étape (ex: CP → endettement brut → trésorerie → endettement net). Utilise ceci UNIQUEMENT pour expliquer COMMENT un montant est calculé, ou quand l'utilisateur demande explicitement une cascade/décomposition.",
+      "input_schema": {
+        "type": "object",
+        "required": ["waterfall_key", "exercice"],
+        "properties": {
+          "waterfall_key":      { "type": "string" },
+          "exercice":           { "type": "integer" },
+          "include_cca_as_qfp": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    {
+      "name": "compare_sector",
+      "description": "Compare une métrique de l'entreprise aux benchmarks BdF du secteur (médiane, Q1, Q3).",
+      "input_schema": {
+        "type": "object",
+        "required": ["metric_key", "exercice"],
+        "properties": {
+          "metric_key": { "type": "string" },
+          "exercice":   { "type": "integer" },
+          "naf_code":   { "type": "string", "default": "auto" }
+        }
+      }
+    },
+    {
+      "name": "get_sig",
+      "description": "Retourne les Soldes Intermédiaires de Gestion.",
+      "input_schema": {
+        "type": "object",
+        "required": ["exercice"],
+        "properties": { "exercice": { "type": "integer" } }
+      }
+    }
+  ],
+
+  "response": {
+    "allowed_blocks": ["text", "table", "chart", "metric_card", "alert", "waterfall_card", "sector_gauge"],
+    "number_format": { "locale": "fr-FR", "currency": "EUR" }
+  },
+
+  "security": {
+    "allowed_tables": ["fec"],
+    "block_patterns": ["DROP", "DELETE", "INSERT", "UPDATE", "TRUNCATE", "UNION SELECT", "--", "/*"],
+    "max_query_timeout_ms": 5000
+  }
+}

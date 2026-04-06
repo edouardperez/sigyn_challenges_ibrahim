@@ -1,0 +1,23 @@
+{
+  "polarity_rules": {
+    "credit_moins_debit": {
+      "applies_to_classes": ["1", "4_passif", "5_passif"],
+      "sql_pattern": "SUM(credit - debit)",
+      "rationale": "Comptes de passif : solde créditeur = ressource positive."
+    },
+    "debit_moins_credit": {
+      "applies_to_classes": ["2", "3", "4_actif", "5_actif"],
+      "sql_pattern": "SUM(debit - credit)",
+      "rationale": "Comptes d'actif : solde débiteur = avoir positif."
+    },
+    "composite": {
+      "applies_to": ["excedent_brut_exploitation", "resultat_net", "tresorerie_active", "tresorerie_passive"],
+      "rationale": "Agrège plusieurs classes avec polarités opposées — expression custom dans mdl_manifest."
+    }
+  },
+  "global_exclusions": {
+    "109": "Capital souscrit non appelé — non disponible, exclure des fonds propres.",
+    "419": "Avances reçues clients — exclure des créances nettes.",
+    "409": "Avances versées fournisseurs — exclure des dettes nettes."
+  }
+}

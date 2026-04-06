@@ -1,0 +1,12 @@
+{
+  "pcg_classes": {
+    "1": { "label": "Comptes de capitaux",         "bilan_side": "passif", "statement": "bilan" },
+    "2": { "label": "Comptes d'immobilisations",   "bilan_side": "actif",  "statement": "bilan" },
+    "3": { "label": "Comptes de stocks",            "bilan_side": "actif",  "statement": "bilan" },
+    "4": { "label": "Comptes de tiers",             "bilan_side": "both",   "statement": "bilan" },
+    "5": { "label": "Comptes financiers",           "bilan_side": "actif",  "statement": "bilan" },
+    "6": { "label": "Comptes de charges",           "statement": "compte_de_resultat" },
+    "7": { "label": "Comptes de produits",          "statement": "compte_de_resultat" }
+  },
+  "sig_cascade": ["chiffre_affaires", "valeur_ajoutee", "excedent_brut_exploitation", "resultat_exploitation", "resultat_net"]
+}

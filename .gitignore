@@ -1,0 +1,62 @@
+# Byte-compiled / optimized
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Environment and secrets (keep .env.example in repo if you add one)
+.env
+.env.local
+.env.*.local
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# Type checkers / linters
+.mypy_cache/
+.ruff_cache/
+.dmypy.json
+dmypy.json
+
+# IDE / editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs and local data dumps (adjust if you version specific outputs)
+*.log
+logs/
+
+# DuckDB / local DB files (uncomment if you store project DBs on disk)
+# *.duckdb
+# *.duckdb.wal

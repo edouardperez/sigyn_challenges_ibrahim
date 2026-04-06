@@ -1,0 +1,39 @@
+{
+  "profiles": {
+    "96.02A": {
+      "label": "Coiffure",
+      "business_model": "B2C_cash",
+      "characteristics": {
+        "encaissement": "Comptant ou J+1 via TPE/Planity (pas de créances clients significatives).",
+        "stocks": "Faibles — produits capillaires uniquement.",
+        "saisonnalite": "Légère — creux estival, pic pré-fêtes.",
+        "main_doeuvre": "Coût principal — masse salariale > 40% du CA.",
+        "immobilisations": "Agencements salon, matériel coiffure, mobilier."
+      },
+      "active_concepts": [
+        "capitaux_propres", "capitaux_propres_appeles", "endettement_brut",
+        "emprunts_lt", "concours_bancaires_courants", "disponibilites",
+        "vmp_liquides", "tresorerie_active", "tresorerie_passive",
+        "compte_courant_associes", "charges_interets",
+        "chiffre_affaires", "masse_salariale",
+        "excedent_brut_exploitation", "resultat_net",
+        "transit_paiement", "effets_encaissement"
+      ],
+      "disabled_concepts": {
+        "besoin_fonds_roulement": "BFR quasi nul en B2C cash — pas pertinent.",
+        "delai_recouvrement_clients": "Pas de créances clients en coiffure.",
+        "production_stockee": "Pas de production stockée — activité de service.",
+        "production_immobilisee": "Aucune production immobilisée."
+      },
+      "key_metrics": [
+        "taux_endettement_brut", "taux_endettement_net",
+        "marge_ebe", "cout_dette", "poids_masse_salariale"
+      ],
+      "bdf_fascicule_code": "96.02",
+      "maturity_warning": {
+        "creation_recente_years": 3,
+        "message": "Entreprise créée il y a moins de 3 ans — les benchmarks BdF sont biaisés (comparaison avec des entreprises établies)."
+      }
+    }
+  }
+}

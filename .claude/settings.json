@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx shadcn@latest add @tool-ui/chart @tool-ui/data-table @tool-ui/stats-display --yes)",
+      "Bash(node -e \"const aui = require\\('@assistant-ui/react'\\); console.log\\(Object.keys\\(aui\\).filter\\(k => k.includes\\('Tool'\\) || k.includes\\('tool'\\) || k.includes\\('Runtime'\\) || k.includes\\('Local'\\)\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(npx tool-agent:*)"
+    ]
+  }
+}
